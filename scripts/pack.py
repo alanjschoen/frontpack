@@ -7,7 +7,7 @@ Usage: python3 pack.py src target
 import re
 import os
 import sys
-from typing import Generator
+from collections import Iterable
 
 
 def get_src_file_contents(path: str, filename: str) -> str:
@@ -35,13 +35,13 @@ def assure_dir(filename: str, create: bool = False) -> str:
     Returns:
         str: directory containing file
     """
-    dirname = os.path.dirname(os.path.realpath(filename))
+    dirname = os.path.dirname(filename)
     if create:
         os.makedirs(dirname, exist_ok=True)
     return dirname
 
 
-def process_html(filename: str) -> Generator[str]:
+def process_html(filename: str) -> Iterable[str]:
     """process html line by line, filling in references to js and css
 
     Args:
@@ -83,11 +83,11 @@ if __name__ == '__main__':
     # Check arguments
     cm, src_file, dest_file = sys.argv
     assert src_file.endswith(('.html', '.htm'))
-    dest_dir = assure_dir(src_file, create=True)
+    dest_dir = assure_dir(dest_file, create=True)
 
     # Process file and write to new file
     with open(dest_file, 'wt', encoding='utf-8') as outf:
         for line in process_html(src_file):
             outf.write(line)
 
-    print("Written packed file to: " + dest_dir)
+    print("Written packed file to: " + dest_file)
